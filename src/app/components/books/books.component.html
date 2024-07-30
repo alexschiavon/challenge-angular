@@ -1,0 +1,169 @@
+<div class="container mt-5">
+  <!-- Formulário para Criar Novo Livro -->
+  <div *ngIf="displayForm" class="new-Book-form">
+    <div [innerHTML]="errorMessage" *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    </div>
+    <h3>{{this.isEditing ? 'Editar' : 'Criar Novo'}} Livro</h3>
+    <form (ngSubmit)="addBook()">
+      <div class="row">
+        <div class="col-8">
+          <div class="form-group">
+            <label for="BookName">Nome do Livro</label>
+            <input type="text" id="BookName" [(ngModel)]="newBook.title" maxlength="40" name="name" class="form-control"
+              required>
+          </div>
+
+        </div>
+        <div class="col-4">
+          <div class="form-group">
+            <label for="publisher">Editora</label>
+            <input type="text" id="publisher" [(ngModel)]="newBook.publisher" maxlength="40" name="publisher"
+              class="form-control" required>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <label for="edition">Edição</label>
+            <input type="number" id="edition" [(ngModel)]="newBook.edition" name="edition" class="form-control"
+              required>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="publicationYear">Ano poublicação</label>
+            <input type="number" id="publicationYear" [(ngModel)]="newBook.publicationYear" maxlength="4" mask="0000"
+              name="publicationYear" class="form-control" required>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <label for="subjects">Assuntos</label>
+            <div id="subjects">
+              <div *ngFor="let subject of Subjects" class="form-check">
+                <input type="checkbox" class="form-check-input" [id]="'subject-' + subject.description"
+                  [value]="subject.subjectId" (change)="onSubjectChange($event)"
+                  [checked]="isSubjectChecked(subject.subjectId)">
+                <label class="form-check-label" [for]="'subject-' + subject.subjectId">{{ subject.description }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="authors">Autores</label>
+            <select id="authors" class="form-control" multiple (change)="onAuthorChange($event)">
+              <option *ngFor="let author of Authors" [value]="author.authorId"
+                [selected]="isAuthorSelected(author.authorId)">
+                {{ author.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <h4>Adicionar Preço</h4>
+          <div class="form-group row">
+            <div class="col-4">
+              <label for="newPurchaseType">Tipo de Compra</label>
+              <select id="newPurchaseType" [(ngModel)]="newPrice.purchaseTypeId" name="newPurchaseType" class="form-control">
+                <option *ngFor="let type of purchaseTypes" [value]="type.purchaseTypeId">{{ type.name }}</option>
+              </select>
+              <div *ngIf="existingPrice()" class="form-text text-danger" id="basic-addon4">Preço já existe para esse modo de compra</div>
+            </div>
+            <div class="col-4">
+              <label for="newPrice">Preço</label>
+              <input type="text" id="newPrice" [(ngModel)]="newPrice.price"
+              name="newPrice"
+              class="form-control" currencyMask
+              [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }">
+            </div>
+            <div class="col-4">
+              <button  type="button" class="btn btn-danger btn-sm" [ngClass]="{'disabled': !(newPrice.purchaseTypeId && newPrice.price)}" (click)="addPrice()">Adicionar Preço</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <h4>Lista de Preços</h4>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Tipo de Compra</th>
+                <th>Preço</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let price of newBook.bookPrices; let i = index">
+                <td>{{ getPurchaseTypeName(price.purchaseTypeId) }}</td>
+                <td>{{ price.price | customCurrency }}</td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-sm" (click)="removePrice(i)">Remover</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary btn-sm">Salvar Livro</button>
+          <a (click)="cancelEditRegister()" class="btn btn-secondary btn-sm">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="displayList()">
+    <h2>Lista de Livros</h2>
+    <button (click)="displayAddNewBook()" class="btn btn-primary">Novo</button>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Editora</th>
+          <th>Autor(res)</th>
+          <th>Ano</th>
+          <th>Edição</th>
+          <th>Assunto</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let Book of Books">
+          <td>{{ Book.title }}</td>
+          <td>{{ Book.publisher }}</td>
+          <td>{{ getAuthorName(Book) }}</td>
+          <td>{{ Book.publicationYear }}</td>
+          <td>{{ Book.edition }}</td>
+          <td>{{ getSubjectName(Book) }}</td>
+          <td>
+            <button (click)="editBook(Book)" class="btn btn-primary btn-sm">Editar</button>
+            <button (click)="deleteBook(Book)" class="btn btn-danger btn-sm">Excluir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <nav [style.visibility]="metadata.pagination.totalCount > 0 ? 'visible' : 'hidden'"
+      aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}"
+            class="page-link">Anterior</a></li>
+        <li class="page-item"><a (click)="goToNextPage()" class="page-link"
+            [ngClass]="{'disabled': isNextDisabled()}">Próxima</a></li>
+      </ul>
+    </nav>
+  </div>
+  <!-- Formulário de Confirmação de Exclusão -->
+  <div *ngIf="displayMsgDelete" class="confirmation-form">
+    <p>Tem certeza que deseja excluir o Livro: {{ selectedBook?.title }}?</p>
+    <button (click)="confirmDelete()" class="btn btn-danger">Confirmar</button>
+    <button (click)="cancelDelete()" class="btn btn-secondary">Cancelar</button>
+  </div>
+</div>

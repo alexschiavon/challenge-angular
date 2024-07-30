@@ -1,0 +1,53 @@
+<div  class="container mt-5">
+  <!-- Formulário para Criar Novo Assunto -->
+  <div *ngIf="displayForm" class="new-Subject-form">
+    <h3>Criar Novo Assunto</h3>
+    <form (ngSubmit)="addSubject()">
+      <div class="form-group">
+        <label for="SubjectName">Nome do Assunto</label>
+        <input type="text" id="SubjectName" [(ngModel)]="newSubject.description" name="name" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Salvar Assunto</button>
+      <a (click)="cancelEditRegister()" class="btn btn-secondary btn-sm">Cancelar</a>
+    </form>
+  </div>
+  <div *ngIf="displayList()">
+  <h2>Lista de Assuntos</h2>
+  <button (click)="displayAddNewSubject()" class="btn btn-primary">Novo</button>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let Subject of Subjects">
+        <td>{{ Subject.description }}</td>
+        <td>
+          <button (click)="editSubject(Subject)" class="btn btn-primary btn-sm">Editar</button>
+          <button (click)="deleteSubject(Subject)" class="btn btn-danger btn-sm">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <nav
+  [style.visibility]="metadata.pagination.totalCount > 0 ? 'visible' : 'hidden'"
+  aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Previous</a></li>
+      <li class="page-item"><a (click)="goToNextPage()" class="page-link"[ngClass]="{'disabled': isNextDisabled()}">Next</a></li>
+    </ul>
+  </nav>
+</div>
+  <!-- Formulário de Confirmação de Exclusão -->
+  <div *ngIf="displayMsgDelete" class="confirmation-form">
+    <p>Tem certeza que deseja excluir o Assunto {{ selectedSubject?.description }}?</p>
+    <button (click)="confirmDelete()" class="btn btn-danger">Confirmar</button>
+    <button (click)="cancelDelete()" class="btn btn-secondary">Cancelar</button>
+  </div>
+</div>
+
+
+
+

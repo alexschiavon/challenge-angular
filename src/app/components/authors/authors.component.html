@@ -1,0 +1,53 @@
+<div  class="container mt-5">
+  <!-- Formulário para Criar Novo Autor -->
+  <div *ngIf="displayForm" class="new-author-form">
+    <h3>Criar Novo Autor</h3>
+    <form (ngSubmit)="addAuthor()">
+      <div class="form-group">
+        <label for="authorName">Nome do Autor</label>
+        <input type="text" id="authorName" [(ngModel)]="newAuthor.name" name="name" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Salvar Autor</button>
+      <a (click)="cancelEditRegister()" class="btn btn-secondary btn-sm">Cancelar</a>
+    </form>
+  </div>
+  <div *ngIf="displayList()">
+  <h2>Lista de Autores</h2>
+  <button (click)="displayAddNewAuthor()" class="btn btn-primary">Novo</button>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let author of authors">
+        <td>{{ author.name }}</td>
+        <td>
+          <button (click)="editAuthor(author)" class="btn btn-primary btn-sm">Editar</button>
+          <button (click)="deleteAuthor(author)" class="btn btn-danger btn-sm">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <nav
+  [style.visibility]="metadata.pagination.totalCount > 0 ? 'visible' : 'hidden'"
+  aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Previous</a></li>
+      <li class="page-item"><a (click)="goToNextPage()" class="page-link" [ngClass]="{'disabled': isNextDisabled()}">Next</a></li>
+    </ul>
+  </nav>
+</div>
+  <!-- Formulário de Confirmação de Exclusão -->
+  <div *ngIf="displayMsgDelete" class="confirmation-form">
+    <p>Tem certeza que deseja excluir o autor {{ selectedAuthor?.name }}?</p>
+    <button (click)="confirmDelete()" class="btn btn-danger">Confirmar</button>
+    <button (click)="cancelDelete()" class="btn btn-secondary">Cancelar</button>
+  </div>
+</div>
+
+
+
+
