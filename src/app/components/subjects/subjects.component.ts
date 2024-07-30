@@ -15,6 +15,7 @@ export class SubjectsComponent {
   isEditing: boolean = false;
   metadata: Metadata = this.getDefaultMetadata();
   Subjects: any;
+  displayErrorSave = false;
   constructor(private subjectsService: SubjectsService) {}
 
   private getDefaultMetadata(
@@ -37,6 +38,7 @@ export class SubjectsComponent {
     this.subjectsService.find(this.metadata).subscribe((data: Metadata) => {
       this.metadata = data;
       this.Subjects = data.content;
+      this.displayErrorSave = false;
     });
   }
   // Método para verificar se o botão "Previous" deve estar desabilitado
@@ -71,6 +73,7 @@ export class SubjectsComponent {
     this.displayForm = true;
     this.isEditing = true;
     this.newSubject = Subject;
+    this.displayErrorSave = false;
     console.log(Subject);
   }
 
@@ -99,31 +102,67 @@ export class SubjectsComponent {
   displayAddNewSubject(): void {
     this.newSubject = new Subject('', '');
     this.displayForm = true;
+    this.displayErrorSave = false;
   }
 
   addSubject(): void {
-    if (!this.isEditing) {
-      if (this.newSubject) {
-        this.subjectsService.save(this.newSubject).subscribe(() => {
-          console.log('Saving Subject:', this.newSubject);
-          this.list();
-          this.newSubject = new Subject('', '');
-          this.displayForm = false;
-        });
-      }
-    } else {
-      if (this.newSubject) {
-        this.subjectsService
-          .update(this.newSubject.subjectId, this.newSubject)
-          .subscribe(() => {
-            console.log('Updating Subject:', this.newSubject);
-            this.list();
-            this.newSubject = new Subject('', '');
-            this.displayForm = false;
-            this.isEditing = false;
-          });
+    if (this.validate(this.newSubject)) {
+      if (!this.isEditing) {
+        if (this.newSubject) {
+          this.subjectsService.save(this.newSubject).subscribe(
+            () => {
+              console.log('Saving Subject:', this.newSubject);
+              this.list();
+              this.newSubject = new Subject('', '');
+              this.displayForm = false;
+              this.displayErrorSave = false;
+            },
+            (error) => {
+              this.displayErrorSave = true;
+              console.error('Error saving subject:', error);
+              // Handle error here
+            }
+          );
+        }
+      } else {
+        if (this.newSubject) {
+          this.subjectsService
+            .update(this.newSubject.subjectId, this.newSubject)
+            .subscribe(
+              () => {
+                console.log('Updating Subject:', this.newSubject);
+                this.list();
+                this.newSubject = new Subject('', '');
+                this.displayForm = false;
+                this.isEditing = false;
+                this.displayErrorSave = false;
+              },
+              (error) => {
+                this.displayErrorSave = true;
+                console.error('Error updating subject:', error);
+                // Handle error here
+              }
+            );
+        }
       }
     }
+  }
+
+  validate(reg: Subject): boolean {
+    const errors: string[] = [];
+    if (
+      !reg.description ||
+      reg.description.length < 3 ||
+      reg.description.length > 40
+    ) {
+      errors.push('Titulo precisa ter de 3 a 40 letras.');
+    }
+
+    if (errors.length > 0) {
+      this.displayErrorSave = true;
+      return false;
+    }
+    return true;
   }
 
   displayList(): boolean {
@@ -132,5 +171,6 @@ export class SubjectsComponent {
 
   cancelEditRegister(): void {
     this.displayForm = false;
+    this.list();
   }
 }

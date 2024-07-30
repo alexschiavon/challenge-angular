@@ -2,14 +2,17 @@
   <!-- Formulário para Criar Novo Assunto -->
   <div *ngIf="displayForm" class="new-Subject-form">
     <h3>Criar Novo Assunto</h3>
+    <fieldset>
     <form (ngSubmit)="addSubject()">
       <div class="form-group">
         <label for="SubjectName">Nome do Assunto</label>
         <input type="text" id="SubjectName" [(ngModel)]="newSubject.description" name="name" class="form-control" required>
       </div>
+      <div *ngIf="displayErrorSave" class="form-text text-danger" id="basic-addon4">Erro ao gravar</div>
       <button type="submit" class="btn btn-primary btn-sm">Salvar Assunto</button>
       <a (click)="cancelEditRegister()" class="btn btn-secondary btn-sm">Cancelar</a>
     </form>
+  </fieldset>
   </div>
   <div *ngIf="displayList()">
   <h2>Lista de Assuntos</h2>
@@ -35,8 +38,8 @@
   [style.visibility]="metadata.pagination.totalCount > 0 ? 'visible' : 'hidden'"
   aria-label="Page navigation example">
     <ul class="pagination">
-      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Previous</a></li>
-      <li class="page-item"><a (click)="goToNextPage()" class="page-link"[ngClass]="{'disabled': isNextDisabled()}">Next</a></li>
+      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Anterior</a></li>
+      <li class="page-item"><a (click)="goToNextPage()" class="page-link"[ngClass]="{'disabled': isNextDisabled()}">Próximo</a></li>
     </ul>
   </nav>
 </div>

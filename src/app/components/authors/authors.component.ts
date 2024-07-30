@@ -16,6 +16,7 @@ export class AuthorsComponent {
   isEditing: boolean = false;
   authors: Author[] = [];
   metadata: Metadata = this.getDefaultMetadata();
+  displayErrorSave = false;
   @ViewChild('form', { static: false })
   public form!: NgForm;
   constructor(private authorService: AuthorsService) {}
@@ -41,6 +42,7 @@ export class AuthorsComponent {
       console.log(data);
       this.metadata = data;
       this.authors = data.content;
+      this.displayErrorSave = false;
     });
   }
   // Método para verificar se o botão "Previous" deve estar desabilitado
@@ -75,6 +77,7 @@ export class AuthorsComponent {
     this.displayForm = true;
     this.isEditing = true;
     this.newAuthor = author;
+    this.displayErrorSave = false;
     console.log(author);
   }
 
@@ -101,31 +104,61 @@ export class AuthorsComponent {
   displayAddNewAuthor(): void {
     this.newAuthor = new Author('', '');
     this.displayForm = true;
+    this.displayErrorSave = false;
   }
 
   addAuthor(): void {
-    if (!this.isEditing) {
-      if (this.newAuthor) {
-        this.authorService.save(this.newAuthor).subscribe(() => {
-          console.log('Saving Subject:', this.newAuthor);
-          this.list();
-          this.newAuthor = new Author('', '');
-          this.displayForm = false;
-        });
+    if (this.validate(this.newAuthor)) {
+      if (!this.isEditing) {
+        if (this.newAuthor) {
+          this.authorService.save(this.newAuthor).subscribe(
+            () => {
+              console.log('Saving Subject:', this.newAuthor);
+              this.list();
+              this.newAuthor = new Author('', '');
+              this.displayForm = false;
+            },
+            (error) => {
+              this.displayErrorSave = true;
+              console.error('Error saving author:', error);
+            }
+          );
+        }
+      } else {
+        if (this.newAuthor) {
+          this.authorService
+            .update(this.newAuthor.authorId, this.newAuthor)
+            .subscribe(
+              () => {
+                console.log('Updating Author:', this.newAuthor);
+                this.list();
+                this.newAuthor = new Author('', '');
+                this.displayForm = false;
+                this.isEditing = false;
+              },
+              (error) => {
+                this.displayErrorSave = true;
+                console.error('Error updating author:', error);
+              }
+            );
+        }
       }
     } else {
-      if (this.newAuthor) {
-        this.authorService
-          .update(this.newAuthor.authorId, this.newAuthor)
-          .subscribe(() => {
-            console.log('Updating Author:', this.newAuthor);
-            this.list();
-            this.newAuthor = new Author('', '');
-            this.displayForm = false;
-            this.isEditing = false;
-          });
-      }
+      console.log('Error saving author:', this.newAuthor);
     }
+  }
+
+  validate(reg: Author): boolean {
+    const errors: string[] = [];
+    if (!reg.name || reg.name.length < 3 || reg.name.length > 40) {
+      errors.push('Titulo precisa ter de 3 a 40 letras.');
+    }
+
+    if (errors.length > 0) {
+      this.displayErrorSave = true;
+      return false;
+    }
+    return true;
   }
 
   displayList(): boolean {
@@ -134,5 +167,6 @@ export class AuthorsComponent {
 
   cancelEditRegister(): void {
     this.displayForm = false;
+    this.list();
   }
 }

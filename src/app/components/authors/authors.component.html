@@ -7,6 +7,7 @@
         <label for="authorName">Nome do Autor</label>
         <input type="text" id="authorName" [(ngModel)]="newAuthor.name" name="name" class="form-control" required>
       </div>
+      <div *ngIf="displayErrorSave" class="form-text text-danger" id="basic-addon4">Erro ao gravar</div>
       <button type="submit" class="btn btn-primary btn-sm">Salvar Autor</button>
       <a (click)="cancelEditRegister()" class="btn btn-secondary btn-sm">Cancelar</a>
     </form>
@@ -35,8 +36,8 @@
   [style.visibility]="metadata.pagination.totalCount > 0 ? 'visible' : 'hidden'"
   aria-label="Page navigation example">
     <ul class="pagination">
-      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Previous</a></li>
-      <li class="page-item"><a (click)="goToNextPage()" class="page-link" [ngClass]="{'disabled': isNextDisabled()}">Next</a></li>
+      <li class="page-item"><a (click)="goToPreviousPage()" [ngClass]="{'disabled': isPreviousDisabled()}" class="page-link">Anterior</a></li>
+      <li class="page-item"><a (click)="goToNextPage()" class="page-link" [ngClass]="{'disabled': isNextDisabled()}">Próximo</a></li>
     </ul>
   </nav>
 </div>
