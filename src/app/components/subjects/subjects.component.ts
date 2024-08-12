@@ -16,6 +16,7 @@ export class SubjectsComponent {
   metadata: Metadata = this.getDefaultMetadata();
   Subjects: any;
   displayErrorSave = false;
+  displayErrorDelete = false;
   constructor(private subjectsService: SubjectsService) {}
 
   private getDefaultMetadata(
@@ -84,19 +85,35 @@ export class SubjectsComponent {
 
   confirmDelete(): void {
     if (this.selectedSubject) {
+
+    }
+    if (this.selectedSubject) {
       this.subjectsService
-        .delete(this.selectedSubject.subjectId)
-        .subscribe(() => {
-          console.log('Deleting Subject:', this.selectedSubject);
-          this.list();
-          this.selectedSubject = null;
-          this.displayMsgDelete = false;
+        .checkSubjectBooks(this.selectedSubject?.subjectId)
+        .subscribe((books) => {
+          if (this.selectedSubject && books.pagination.totalCount === 0) {
+            this.subjectsService
+            .delete(this.selectedSubject.subjectId)
+            .subscribe(() => {
+              console.log('Deleting Subject:', this.selectedSubject);
+              this.list();
+              this.selectedSubject = null;
+              this.displayMsgDelete = false;
+            });
+          } else {
+            console.error(
+              'Cannot delete subject. Subject is associated with books.'
+            );
+            this.displayErrorDelete = true;
+          }
         });
     }
   }
 
   cancelDelete(): void {
     this.displayMsgDelete = false;
+    this.selectedSubject = null;
+    this.displayErrorDelete = false;
   }
 
   displayAddNewSubject(): void {
@@ -153,9 +170,9 @@ export class SubjectsComponent {
     if (
       !reg.description ||
       reg.description.length < 3 ||
-      reg.description.length > 40
+      reg.description.length > 20
     ) {
-      errors.push('Titulo precisa ter de 3 a 40 letras.');
+      errors.push('Titulo precisa ter de 3 a 20 letras.');
     }
 
     if (errors.length > 0) {

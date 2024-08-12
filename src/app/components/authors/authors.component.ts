@@ -17,6 +17,7 @@ export class AuthorsComponent {
   authors: Author[] = [];
   metadata: Metadata = this.getDefaultMetadata();
   displayErrorSave = false;
+  displayErrorDelete = false;
   @ViewChild('form', { static: false })
   public form!: NgForm;
   constructor(private authorService: AuthorsService) {}
@@ -87,18 +88,27 @@ export class AuthorsComponent {
   }
 
   confirmDelete(): void {
-    if (this.selectedAuthor) {
-      this.authorService.delete(this.selectedAuthor.authorId).subscribe(() => {
-        console.log('Deleting author:', this.selectedAuthor);
-        this.list();
-        this.selectedAuthor = null;
-        this.displayMsgDelete = false;
+    if (this.selectedAuthor != null) {
+      this.authorService.checkAuthorBooks(this.selectedAuthor.authorId).subscribe((books) => {
+        if (this.selectedAuthor && books.pagination.totalCount === 0) {
+          this.authorService.delete(this.selectedAuthor.authorId).subscribe(() => {
+            console.log('Deleting author:', this.selectedAuthor);
+            this.list();
+            this.selectedAuthor = null;
+            this.displayMsgDelete = false;
+          });
+        } else {
+          this.displayErrorDelete = true;
+          console.error('Cannot delete author. Author is associated with books.');
+        }
       });
     }
   }
 
   cancelDelete(): void {
     this.displayMsgDelete = false;
+    this.selectedAuthor = null;
+    this.displayErrorDelete = false;
   }
 
   displayAddNewAuthor(): void {

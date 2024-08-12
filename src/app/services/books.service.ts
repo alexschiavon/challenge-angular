@@ -44,12 +44,6 @@ export class BooksService extends RestService {
   }
 
   override update(id : string, obj: Book): Observable<Book> {
-    const { bookPrices, ...genericBook } = obj;
-    //const sanitizedPrice = bookPrices.map(({ bookPriceId, ...rest }) => rest);
-    // const bookToSave = { ...genericBook,
-    //   bookPrices: sanitizedPrice
-    // };
-    console.log(obj);
     return this.putRequest(`${this.api}/${id}`, obj);
   }
 }

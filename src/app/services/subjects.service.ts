@@ -32,4 +32,9 @@ export class SubjectsService extends RestService {
   override update(id : string, obj: Subject): Observable<Subject> {
     return this.putRequest(`${this.api}/${id}`, obj);
   }
+
+  checkSubjectBooks(subjectId: string): Observable<Metadata> {
+    let params = new URLSearchParams();
+    return this.getPaginatedRequest(`${this.api}/${subjectId}/books`, params);
+  }
 }

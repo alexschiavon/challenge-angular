@@ -162,10 +162,9 @@ export class BooksComponent {
     if (!book.bookSubjects || book.bookSubjects.length === 0) {
         errors.push('Assunto é obrigatório.');
     }
-    // if (!book.price || book.price <= 0) {
-    //   errors.push('Price is required and must be greater than 0.');
-    // }
-    // Adicione outras validações conforme necessário
+    if (!book.bookPrices || book.bookPrices.length === 0) {
+      errors.push('Informe uma forma de compra e valor');
+  }
 
     if (errors.length > 0) {
         this.errorMessage = errors.join('<br>');

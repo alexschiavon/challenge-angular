@@ -33,4 +33,9 @@ export class AuthorsService extends RestService {
   override update(id : string, obj: Author): Observable<Author> {
     return this.putRequest(`${this.api}/${id}`, obj);
   }
+
+  checkAuthorBooks(authorId: string): Observable<Metadata> {
+    let params = new URLSearchParams();
+    return this.getPaginatedRequest(`${this.api}/${authorId}/books`, params);
+  }
 }

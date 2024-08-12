@@ -6,7 +6,7 @@
     <form (ngSubmit)="addSubject()">
       <div class="form-group">
         <label for="SubjectName">Nome do Assunto</label>
-        <input type="text" id="SubjectName" [(ngModel)]="newSubject.description" name="name" class="form-control" required>
+        <input type="text" id="SubjectName" [(ngModel)]="newSubject.description" name="name" maxlength="20" class="form-control" required>
       </div>
       <div *ngIf="displayErrorSave" class="form-text text-danger" id="basic-addon4">Erro ao gravar</div>
       <button type="submit" class="btn btn-primary btn-sm">Salvar Assunto</button>
@@ -48,6 +48,7 @@
     <p>Tem certeza que deseja excluir o Assunto {{ selectedSubject?.description }}?</p>
     <button (click)="confirmDelete()" class="btn btn-danger">Confirmar</button>
     <button (click)="cancelDelete()" class="btn btn-secondary">Cancelar</button>
+    <div *ngIf="displayErrorDelete" class="form-text text-danger" id="basic-addon4">Não é possível deletar um assunto que possui livros associados.</div>
   </div>
 </div>
 
